@@ -1,0 +1,51 @@
+doctype html
+html
+  head
+    style.
+      pre {
+        background-color: #f4f4f4;
+        padding: 10px;
+        color: #333;
+        width: 80%;
+        overflow: overlay;
+      }
+      pre#response {
+        margin: 10px 40px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 81%;
+        margin: 10px 40px;
+      }
+      th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+      }
+      form {
+        margin: 10px 40px;
+        width: 80%;
+      }
+      h4 {
+        margin: 80px 40px 0px 40px;
+      }
+      button {
+        display: block;
+      }
+  body
+    table
+      tr
+        th Role
+        th Content
+      each message in messages
+        tr
+          td= message.role
+          td
+            != marked.parse(message.content)
+
+    form(action='/submit', method='POST')
+      textarea(name='inputData', placeholder='Say something', rows='6', cols='40')
+      button(type='submit') Send
+
+    h4 Full API response
+    pre#response #{JSON.stringify(responseData, null, 2)}

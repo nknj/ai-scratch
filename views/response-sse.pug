@@ -1,0 +1,90 @@
+doctype html
+html
+  head
+    link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css', rel='stylesheet')
+    script(src='https://cdn.jsdelivr.net/npm/marked/marked.min.js')
+    script.
+      document.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelector('form').addEventListener('submit', function(event) {
+          event.preventDefault();
+
+          var inputData = document.querySelector('textarea[name="inputData"]').value;
+          var responseData = '';
+          fetch('/submit', { 
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: 'inputData=' + encodeURIComponent(inputData)
+          })
+          .then(function() {
+              var eventSource = new EventSource('/stream');
+              var table = document.getElementById('chat-table');
+
+              // add prompt to chat
+              var promptRow = table.insertRow(-1);
+              var promptCell1 = promptRow.insertCell(0);
+              var promptCell2 = promptRow.insertCell(1);
+              promptCell1.textContent = 'user';
+              promptCell2.textContent = inputData;
+
+              // stream response to chat
+              var responseRow = table.insertRow(-1);
+              var responseCell1 = responseRow.insertCell(0);
+              var responseCell2 = responseRow.insertCell(1);
+              responseCell1.textContent = 'assistant';
+              eventSource.onmessage = function(event) {
+                  var data = JSON.parse(event.data);
+
+                  if (data.choices && data.choices[0].finish_reason === 'stop') {
+                      eventSource.close();
+                      document.querySelector('textarea[name="inputData"]').value = '';
+                      responseData = '';
+                  } else {
+                    responseData += data.choices[0].delta.content;
+                    responseCell2.innerHTML = marked.parse(responseData);
+                  }
+              };
+          });
+        })
+      });
+
+    style.
+      table {
+        border-collapse: collapse;
+        width: 81%;
+        margin: 10px 40px;
+      }
+      th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+      }
+      table td:first-child {
+        width: 50px;
+      }
+
+      
+      form {
+        margin: 10px 40px;
+        width: 80%;
+      }
+      button {
+        display: block;
+      }
+  body
+    h1 
+    table#chat-table
+      tr
+        th Role
+        th Content
+      each message in messages
+        tr
+          td= message.role
+          td
+            != marked.parse(message.content)
+
+    form
+      div(style='display: flex; justify-content: space-between;')
+        textarea(name='inputData', placeholder='Say something', style='width: 95%; margin-right: 5px; resize: none;')
+        button(type='submit' style='width: 5%;') 
+          i(class='fas fa-paper-plane')
+      

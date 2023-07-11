@@ -1,0 +1,28 @@
+{
+  "name": "nknjai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app-sse.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app-sse.js",
+    "dev": "nodemon app-sse.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "langchain": "^0.0.105",
+    "marked": "^5.1.1",
+    "openai": "^3.3.0",
+    "pug": "^3.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
